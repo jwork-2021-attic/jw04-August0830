@@ -2,9 +2,12 @@ package com.anish.screen;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Random;
 
 import com.anish.calabashbros.BubbleSorter;
 import com.anish.calabashbros.Calabash;
+import com.anish.calabashbros.Node;
 import com.anish.calabashbros.World;
 
 import asciiPanel.AsciiPanel;
@@ -12,35 +15,22 @@ import asciiPanel.AsciiPanel;
 public class WorldScreen implements Screen {
 
     private World world;
-    private Calabash[] bros;
+    private Calabash hero;
     String[] sortSteps;
 
     public WorldScreen() {
         world = new World();
+        Random r = new Random();
 
-        bros = new Calabash[7];
+       
+       
 
-        bros[3] = new Calabash(new Color(204, 0, 0), 1, world);
-        bros[5] = new Calabash(new Color(255, 165, 0), 2, world);
-        bros[1] = new Calabash(new Color(252, 233, 79), 3, world);
-        bros[0] = new Calabash(new Color(78, 154, 6), 4, world);
-        bros[4] = new Calabash(new Color(50, 175, 255), 5, world);
-        bros[6] = new Calabash(new Color(114, 159, 207), 6, world);
-        bros[2] = new Calabash(new Color(173, 127, 168), 7, world);
+        int red = (r.nextInt(255)+255)/2;
+        int blue = (r.nextInt(255)+255)/2;
+        int green = (r.nextInt(255)+255)/2;
+        hero = new Calabash(new Color(red,green,blue),1,world);
+        world.put(hero,5,0);
 
-        world.put(bros[0], 10, 10);
-        world.put(bros[1], 12, 10);
-        world.put(bros[2], 14, 10);
-        world.put(bros[3], 16, 10);
-        world.put(bros[4], 18, 10);
-        world.put(bros[5], 20, 10);
-        world.put(bros[6], 22, 10);
-
-        BubbleSorter<Calabash> b = new BubbleSorter<>();
-        b.load(bros);
-        b.sort();
-
-        sortSteps = this.parsePlan(b.getPlan());
     }
 
     private String[] parsePlan(String plan) {
@@ -60,7 +50,18 @@ public class WorldScreen implements Screen {
         }
         return null;
     }
-
+    private void mazeMove(KeyEvent key){
+        int keycode = key.getKeyCode();
+        int[][] action ={{-1,0},{0,-1},{1,0},{0,1}};
+        int[] step = action[keycode-37];
+        int nxtX = step[0]+hero.getX();
+        int nxtY = step[1]+hero.getY();
+        if(nxtX>=0 && nxtX < World.WIDTH
+        && nxtY>=0 && nxtY < World.HEIGHT
+        && !(world.get(nxtX,nxtY) instanceof Node)){
+            hero.moveTo(nxtX, nxtY);
+        }
+    }
     @Override
     public void displayOutput(AsciiPanel terminal) {
 
@@ -77,12 +78,8 @@ public class WorldScreen implements Screen {
 
     @Override
     public Screen respondToUserInput(KeyEvent key) {
-
-        if (i < this.sortSteps.length) {
-            this.execute(bros, sortSteps[i]);
-            i++;
-        }
-
+        
+        mazeMove(key);
         return this;
     }
 

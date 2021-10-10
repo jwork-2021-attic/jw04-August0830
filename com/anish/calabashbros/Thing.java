@@ -20,7 +20,7 @@ public class Thing {
         this.tile = tile;
     }
 
-    Thing(Color color, char glyph, World world) {
+    protected Thing(Color color, char glyph, World world) {
         this.color = color;
         this.glyph = glyph;
         this.world = world;
