@@ -2,12 +2,13 @@ package com.anish.screen;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Random;
 
-import com.anish.calabashbros.BubbleSorter;
+import com.anish.calabashbros.Block;
 import com.anish.calabashbros.Calabash;
-import com.anish.calabashbros.Node;
+import com.anish.calabashbros.Floor;
+import com.anish.calabashbros.Trace;
 import com.anish.calabashbros.World;
 
 import asciiPanel.AsciiPanel;
@@ -20,16 +21,43 @@ public class WorldScreen implements Screen {
 
     public WorldScreen() {
         world = new World();
+        
+        MazeGenerator mazegen = new  MazeGenerator(World.WIDTH,World.HEIGHT);
+        //MazeGenerator mazegen = new MazeGenerator(20,10);
+        mazegen.generateMaze();
+        String mazeStr = mazegen.getSymbolicMaze();
+        //System.out.println(mazeStr);
+        int mazeX=0;
+        int mazeY=0;
+        //System.out.println(mazeStr.length());
+        ArrayList<Integer> startList = new ArrayList<>();
+        for(int i=0;i<mazeStr.length();++i){
+            char ch = mazeStr.charAt(i);
+            if(ch=='\n')
+            {
+                mazeX=0;
+                mazeY++;
+            }    
+            else{
+                if(ch != '*')
+                {
+                    Block b = new Block(world,mazeX,mazeY);
+                    world.put(b,mazeX,mazeY);
+                }
+                else if(mazeX==0){
+                    startList.add(mazeY);
+                }
+                //System.out.println(ch+" "+mazeX+" "+mazeY);
+                mazeX++;
+            }
+            
+        }
         Random r = new Random();
-
-       
-       
-
         int red = (r.nextInt(255)+255)/2;
         int blue = (r.nextInt(255)+255)/2;
         int green = (r.nextInt(255)+255)/2;
         hero = new Calabash(new Color(red,green,blue),1,world);
-        world.put(hero,5,0);
+        world.put(hero,0,startList.get(r.nextInt(startList.size())));
 
     }
 
@@ -52,14 +80,17 @@ public class WorldScreen implements Screen {
     }
     private void mazeMove(KeyEvent key){
         int keycode = key.getKeyCode();
-        int[][] action ={{-1,0},{0,-1},{1,0},{0,1}};
+        int[][] action ={{-1,0},{0,-1},{1,0},{0,1}};//left up right down
         int[] step = action[keycode-37];
+        int x = hero.getX();
+        int y = hero.getY();
         int nxtX = step[0]+hero.getX();
         int nxtY = step[1]+hero.getY();
         if(nxtX>=0 && nxtX < World.WIDTH
         && nxtY>=0 && nxtY < World.HEIGHT
-        && !(world.get(nxtX,nxtY) instanceof Node)){
+        &&!(world.get(nxtX,nxtY) instanceof Block)){//  
             hero.moveTo(nxtX, nxtY);
+            world.put(new Trace(world,x,y),x,y);
         }
     }
     @Override

@@ -3,8 +3,6 @@ package com.anish.screen;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import com.anish.calabashbros.Node;
-
 import java.util.Random;
 import java.util.Arrays;
 
@@ -13,11 +11,13 @@ public class MazeGenerator {
     private Stack<Node> stack = new Stack<>();
     private Random rand = new Random();
     private int[][] maze;
-    private int dimension;
+    private int width;
+    private int height;
 
-    MazeGenerator(int dim) {
-        maze = new int[dim][dim];
-        dimension = dim;
+    MazeGenerator(int wid,int height) {
+        width = wid;
+        maze = new int[height][wid];
+        this.height = height;
     }
 
     public void generateMaze() {
@@ -42,10 +42,10 @@ public class MazeGenerator {
 
     public String getSymbolicMaze() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 sb.append(maze[i][j] == 1 ? "*" : " ");
-                sb.append("  "); 
+                //sb.append("  "); 
             }
             sb.append("\n");
         }
@@ -86,7 +86,7 @@ public class MazeGenerator {
     }
 
     private Boolean pointOnGrid(int x, int y) {
-        return x >= 0 && y >= 0 && x < dimension && y < dimension;
+        return x >= 0 && y >= 0 && x <  width && y < height;
     }
 
     private Boolean pointNotCorner(Node node, int x, int y) {
