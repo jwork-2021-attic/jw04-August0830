@@ -5,10 +5,10 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.anish.calabashbros.Block;
 import com.anish.calabashbros.Calabash;
 import com.anish.calabashbros.Floor;
 import com.anish.calabashbros.Trace;
+import com.anish.calabashbros.Wall;
 import com.anish.calabashbros.World;
 
 import asciiPanel.AsciiPanel;
@@ -41,8 +41,8 @@ public class WorldScreen implements Screen {
             else{
                 if(ch != '*')
                 {
-                    Block b = new Block(world,mazeX,mazeY);
-                    world.put(b,mazeX,mazeY);
+                    Wall w = new Wall(world);
+                    world.put(w,mazeX,mazeY);
                 }
                 else if(mazeX==0){
                     startList.add(mazeY);
@@ -88,7 +88,7 @@ public class WorldScreen implements Screen {
         int nxtY = step[1]+hero.getY();
         if(nxtX>=0 && nxtX < World.WIDTH
         && nxtY>=0 && nxtY < World.HEIGHT
-        &&!(world.get(nxtX,nxtY) instanceof Block)){//  
+        &&!(world.get(nxtX,nxtY) instanceof Wall)){//  
             hero.moveTo(nxtX, nxtY);
             world.put(new Trace(world,x,y),x,y);
         }
